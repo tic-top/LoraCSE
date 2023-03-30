@@ -126,8 +126,8 @@ def cl_init(cls, config):
         cls.mlp = MLPLayer(config)
     cls.sim = Similarity(temp=cls.model_args.temp)
     ###########################################################################
-    if cls.model_args.do_eh_loss:
-        cls.margin_rank_loss = nn.MarginRankingLoss(margin=cls.model_args.eh_loss_margin)
+    if cls.model_args.predict_loss:
+        cls.pl = MLPLayer(config)
     ###########################################################################
     cls.init_weights()
 
@@ -209,18 +209,23 @@ def cl_forward(cls,
     # Separate representation
     z1, z2 = pooler_output[:,0], pooler_output[:,1]
 
+    # Prediction
+    if cls.model_args.predict_loss:
+        p = cls.pl(pooler_output)
+        p1, p2 = p[:0], p[:,1]
+
     # Hard negative
-    if num_sent == 3:
-        z3 = pooler_output[:, 2]
+    # if num_sent == 3:
+    #   z3 = pooler_output[:, 2]
 
     # Gather all embeddings if using distributed training
     if dist.is_initialized() and cls.training:
         # Gather hard negative
-        if num_sent >= 3:
-            z3_list = [torch.zeros_like(z3) for _ in range(dist.get_world_size())]
-            dist.all_gather(tensor_list=z3_list, tensor=z3.contiguous())
-            z3_list[dist.get_rank()] = z3
-            z3 = torch.cat(z3_list, 0)
+        # if num_sent >= 3:
+        #     z3_list = [torch.zeros_like(z3) for _ in range(dist.get_world_size())]
+        #     dist.all_gather(tensor_list=z3_list, tensor=z3.contiguous())
+        #     z3_list[dist.get_rank()] = z3
+        #     z3 = torch.cat(z3_list, 0)
 
         # Dummy vectors for allgather
         z1_list = [torch.zeros_like(z1) for _ in range(dist.get_world_size())]
@@ -238,46 +243,50 @@ def cl_forward(cls,
         z2 = torch.cat(z2_list, 0)
 
     cos_sim = cls.sim(z1.unsqueeze(1), z2.unsqueeze(0))
+
+    if cls.model_args.do_predict_loss:
+        z1_p2_cos = cls.sim(z1, p2)
+        p1_z2_cos = cls.sim(p1, z2)
+        # I don't know which dimension to concatenate
+        cos_sim = torch.cat([z1_p2_cos, p1_z2_cos], 1)
+
     # Hard negative
-    if num_sent >= 3:
-        z1_z3_cos = cls.sim(z1.unsqueeze(1), z3.unsqueeze(0))
-        cos_sim = torch.cat([cos_sim, z1_z3_cos], 1)
+    # if num_sent >= 3:
+    #     z1_z3_cos = cls.sim(z1.unsqueeze(1), z3.unsqueeze(0))
+    #     cos_sim = torch.cat([cos_sim, z1_z3_cos], 1)
         
-        #######################################################################
-        if cls.model_args.do_eh_loss:
-            z1_z2_cos = cls.sim(z1.unsqueeze(1), z2.unsqueeze(0))
-            anchor_pos = torch.diag(z1_z2_cos).unsqueeze(dim=-1)
+    #     #######################################################################
+    #     if cls.model_args.do_eh_loss:
+    #         z1_z2_cos = cls.sim(z1.unsqueeze(1), z2.unsqueeze(0))
+    #         anchor_pos = torch.diag(z1_z2_cos).unsqueeze(dim=-1)
             
-            vector = -1e9 * torch.ones(z1_z2_cos.size(0)).to(cls.device)
-            mask = torch.diag(torch.ones_like(vector)).to(cls.device)
-            z1_z2_cos_new = mask * torch.diag(vector) + (1. - mask) * z1_z2_cos
-            max_s3_sn = torch.max(torch.cat([z1_z2_cos_new, z1_z3_cos], dim=-1), -1, keepdim=True)[0]
+    #         vector = -1e9 * torch.ones(z1_z2_cos.size(0)).to(cls.device)
+    #         mask = torch.diag(torch.ones_like(vector)).to(cls.device)
+    #         z1_z2_cos_new = mask * torch.diag(vector) + (1. - mask) * z1_z2_cos
+    #         max_s3_sn = torch.max(torch.cat([z1_z2_cos_new, z1_z3_cos], dim=-1), -1, keepdim=True)[0]
             
-            rank_label = torch.ones_like(anchor_pos).long()
-            margin_loss = cls.margin_rank_loss(anchor_pos * cls.model_args.temp, 
-                                               max_s3_sn * cls.model_args.temp, 
-                                               rank_label)
-        #######################################################################
+    #         rank_label = torch.ones_like(anchor_pos).long()
+    #         margin_loss = cls.margin_rank_loss(anchor_pos * cls.model_args.temp, 
+    #                                            max_s3_sn * cls.model_args.temp, 
+    #                                            rank_label)
+    #     #######################################################################
     
 
-    labels = torch.arange(cos_sim.size(0)).long().to(cls.device)
-    loss_fct = nn.CrossEntropyLoss()
+    # labels = torch.arange(cos_sim.size(0)).long().to(cls.device)
+    labels = torch.ones(cos_sim.size(0)).long().to(cls.device)
+    # loss_fct = nn.CrossEntropyLoss()
+    loss_fct = nn.MSELoss()
 
     # Calculate loss with hard negatives
-    if num_sent == 3:
-        # Note that weights are actually logits of weights
-        z3_weight = cls.model_args.hard_negative_weight
-        weights = torch.tensor(
-            [[0.0] * (cos_sim.size(-1) - z1_z3_cos.size(-1)) + [0.0] * i + [z3_weight] + [0.0] * (z1_z3_cos.size(-1) - i - 1) for i in range(z1_z3_cos.size(-1))]
-        ).to(cls.device)
-        cos_sim = cos_sim + weights
+    # if num_sent == 3:
+    #     # Note that weights are actually logits of weights
+    #     z3_weight = cls.model_args.hard_negative_weight
+    #     weights = torch.tensor(
+    #         [[0.0] * (cos_sim.size(-1) - z1_z3_cos.size(-1)) + [0.0] * i + [z3_weight] + [0.0] * (z1_z3_cos.size(-1) - i - 1) for i in range(z1_z3_cos.size(-1))]
+    #     ).to(cls.device)
+    #     cos_sim = cos_sim + weights
 
     loss = loss_fct(cos_sim, labels)
-    
-    ###########################################################################
-    if cls.model_args.do_eh_loss:
-        loss += cls.model_args.eh_loss_weight * margin_loss
-    ###########################################################################
 
     # Calculate loss for MLM
     if mlm_outputs is not None and mlm_labels is not None:

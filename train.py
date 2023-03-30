@@ -140,6 +140,12 @@ class ModelArguments:
             "help": "The hidden size of the MLP projection head in Prefix Encoder if prefix projection is used"
         }
     )
+    do_predict_loss: bool = field(
+        default=False,
+        metadata={
+            "help" : "Whether to add prediction loss"
+        }
+    )
     do_eh_loss: bool = field(
         default=False,
         metadata={
