@@ -266,7 +266,7 @@ def cl_forward(cls,
         z1_p2_cos = cls.sim(z1, p2)
         p1_z2_cos = cls.sim(p1, z2)
         # I don't know which dimension to concatenate
-        cos_sim = torch.cat([z1_p2_cos, p1_z2_cos], 1)
+        cos_sim = torch.cat([z1_p2_cos, p1_z2_cos], 0)
 
     # Hard negative
     # if num_sent >= 3:
