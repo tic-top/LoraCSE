@@ -238,6 +238,16 @@ def cl_forward(cls,
         z2 = torch.cat(z2_list, 0)
 
     cos_sim = cls.sim(z1.unsqueeze(1), z2.unsqueeze(0))
+
+    #gsinfonce
+    if cls.model_args.random_size > 0:
+        #import ipdb;ipdb.set_trace()
+        if cls.model_args.random_std == 0.0 :
+            z2_random = torch.randn(cls.model_args.random_size,z1.shape[1]).to(cls.device)
+        else:
+            z2_random = torch.normal(0, cls.model_args.random_std, size=(cls.model_args.random_size,z1.shape[1])).to(cls.device)
+        cos_sim = torch.cat((cos_sim,cls.sim(z1.unsqueeze(1), z2_random.unsqueeze(0))),1).to(cls.device)
+
     # Hard negative
     if num_sent >= 3:
         z1_z3_cos = cls.sim(z1.unsqueeze(1), z3.unsqueeze(0))

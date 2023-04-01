@@ -164,6 +164,37 @@ class ModelArguments:
             "help": "The weight of Energy-based Hinge loss"
         }
     ) 
+    random_size: int = field(
+        default=192,
+        metadata={
+            "help": "random size M."
+        }
+    )
+    random_std: float = field(
+        default=0.1,
+        metadata={
+            "help": "gussian random variance."
+        }
+    ) 
+    lambda_g: float = field(
+        default=1.,
+        metadata={
+            "help": "gussian random variance."
+        }
+    ) 
+    dup_type: str = field(
+        default="None",
+        metadata={
+            "help": "What kind of pooler to use (cls, cls_before_pooler, avg, avg_top2, avg_first_last)."
+        }
+    ) 
+    dup_rate: float = field(
+        default=0.05,
+        metadata={
+            "help": "dup_rate."
+        }
+    )
+
 
 
 @dataclass
@@ -468,8 +499,29 @@ def main():
                 examples[sent0_cname][idx] = " "
             if examples[sent1_cname][idx] is None:
                 examples[sent1_cname][idx] = " "
-        
-        sentences = examples[sent0_cname] + examples[sent1_cname]
+        # esimcse
+        if model_args.dup_type == "word":
+            new_sent1 = []
+            for sent in examples[sent1_cname]:
+  
+                sent_list = sent.split(' ')
+                sent_len = len(sent_list)
+                if sent_len > 0:
+                    add_len = random.randrange(min(10, sent_len, max(2, int(model_args.dup_rate * sent_len))))
+                    dup = sorted(random.sample(range(0, sent_len-1), add_len))
+                    for i in dup:
+                        if model_args.add_stop:
+                            stop_index = random.randint(0,len(stop_words)-1)
+                            sent_list[i] = sent_list[i] + ' ' + stop_words[stop_index]
+                        else :
+                            sent_list[i] = sent_list[i] + ' ' + sent_list[i]
+                    new_sent1.append(' '.join(sent_list))
+                else:
+                    new_sent1.append(sent)
+
+            sentences = examples[sent0_cname] + new_sent1
+        else:
+            sentences = examples[sent0_cname] + examples[sent1_cname]
 
         # If hard negative exists
         if sent2_cname is not None:
@@ -484,6 +536,41 @@ def main():
             truncation=True,
             padding="max_length" if data_args.pad_to_max_length else False,
         )
+
+        # esimcse
+        if model_args.dup_type == "bpe":
+            new_sent_features = {"input_ids":[], "token_type_ids":[], "attention_mask":[]}
+            for idx, input_ids in enumerate(sent_features["input_ids"]):
+                input_len = len(input_ids)
+                '''
+                if idx >= total:
+                    new_input_ids = []
+                    i = 0
+                    while i < len(input_ids):
+                        if np.random.random() < model_args.dup_rate:
+                            dup_len = min(np.random.poisson(lam=1), 3)
+                            new_input_ids.extend(input_ids[i:dup_len])
+                            new_input_ids.extend(input_ids[i:dup_len])
+                            i += dup_len
+                        else:
+                            new_input_ids.append(input_ids[i])
+                            i += 1
+                '''
+                if idx >= total and int(model_args.dup_rate * input_len) > 0:
+                    add_len = random.randrange(min(10, int(model_args.dup_rate * input_len)))
+                    dup = sorted(random.sample(range(1, input_len-1), add_len)) # not [CLS]
+                    new_input_ids = []
+                    for i, _id in enumerate(input_ids):
+                        if i in dup:
+                            new_input_ids.append(_id)
+                        new_input_ids.append(_id)
+                else:
+                    new_input_ids = input_ids
+                new_sent_features["input_ids"].append(new_input_ids)
+                new_sent_features["token_type_ids"].append(len(new_input_ids) * [0])
+                new_sent_features["attention_mask"].append(len(new_input_ids) * [1])
+            sent_features = new_sent_features
+
 
         features = {}
         if sent2_cname is not None:
