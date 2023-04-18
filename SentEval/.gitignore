@@ -13,4 +13,3 @@ __pycache__/
 
 # data files
 data/senteval_data*
-data/downstream/
