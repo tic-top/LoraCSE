@@ -5,7 +5,7 @@
 ## Instructions
 
 - Open the LoraCSE.ipynb notebook to access all the experiments.
-- Follow the instructions provided in the notebook to run the experiments and view the results.
+- Follow the instructions provided in the notebook to run the experiments with your GPU and view the results.
 
 ## Performance
 
@@ -17,12 +17,15 @@
 
 ## Requirements
 
-To run the experiment, which involves processing large amounts of data with a batch size of 512, your GPU must have at least 40GB of RAM. Here are the compatible GPUs:
+To run the experiment, which involves processing large amounts of data with a batch size of 512, your GPU must have at least 40GB of RAM.
+Here are the compatible GPUs:
 
 - V100
 - V6000
 - V40
 - RTX3090 (four required)
+
+In this experiment, we use four A40.
 
 
 ## Acknowledgements
