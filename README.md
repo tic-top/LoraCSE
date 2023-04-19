@@ -21,8 +21,8 @@ To run the experiment, which involves processing large amounts of data with a ba
 Here are the compatible GPUs:
 
 - V100
-- V6000
-- V40
+- A6000
+- A40
 - RTX3090 (four required)
 
 In this experiment, we use four A40.
