@@ -4,7 +4,7 @@
 
 ## Instructions
 
-- Open the LoraCSE.ipynb notebook to access all the experiments that use the Lion optimizer.
+- Open the LoraCSE.ipynb notebook to access all the experiments.
 - Follow the instructions provided in each notebook to run the experiments and view the results.
 
 ## Performance
@@ -22,7 +22,7 @@ To run the experiment, which involves processing large amounts of data with a ba
 - V100
 - V6000
 - V40
-- RTX4090 (four required)
+- RTX3090 (four required)
 
 
 ## Acknowledgements
