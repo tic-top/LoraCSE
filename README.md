@@ -1,5 +1,5 @@
 # LoRACSE: Contrastive Learning of Sentence Embedding using LoRA
-
+## UMICH EECS487 final project
 ### date: 18/4/2013
 
 ## Instructions
