@@ -5,13 +5,14 @@
 
 ## Instructions
 
-This project involves running experiments with the LoraCSE model to evaluate its performance. Here's how to access and run the code:
+This project involves evaluating the performance of the LoraCSE model through a series of experiments. Here's how to access and run the code:
 
-- Open the LoraCSE.ipynb notebook to access the code for all the experiments.
-- Follow the instructions provided in the notebook to run the experiments with your GPU and view the results.
-- After running the experiments, refer to LoRACSE.pdf for a detailed analysis of the results.
+- Open the LoraCSE.ipynb notebook to view and run the code for all the experiments.
+- Follow the instructions provided in the notebook to run the experiments using your GPU and view the results.
+- After running the experiments, refer to the accompanying LoRACSE.pdf file for a detailed analysis of the results.
 
-The analysis presented in LoRACSE.pdf provides insights into the performance of the LoraCSE model under different conditions. Use this information to fine-tune the model and improve its accuracy for your specific use case.
+The analysis provided in LoRACSE.pdf offers insights into the performance of the LoraCSE model and its ability to handle different types of data. Use this information to improve the model's accuracy for your specific use case.
+
 
 
 ## Performance
