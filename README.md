@@ -4,6 +4,6 @@
 
 Everything is done in LoraCSE.ipynb
 
-The LoraCSE.ipynb contains the experiment on the Bert and Roberta_base.
+The LoraCSE.ipynb contains all the experiments.(optimizer with Lion)
 
-The LoraCSE_recorded.ipynb contains the experiment on Roberta_large.
+The LoraCSE_recorded.ipynb records part of previous experiments.(optimizer with AdamW)
