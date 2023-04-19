@@ -1,5 +1,5 @@
 # 😜LoRACSE: Contrastive Learning of Sentence Embedding using LoRA
-## UMICH EECS487 final project
+##  Final project of EECS 487: Introduction to Natural Language Processing (Umich)
 ### date: 18/4/2013
 
 ## Instructions
