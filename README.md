@@ -5,8 +5,9 @@
 
 ## Instructions
 
-- Open the LoraCSE.ipynb notebook to access all the experiments.
+- Open the LoraCSE.ipynb notebook to access the code of all the experiments.
 - Follow the instructions provided in the notebook to run the experiments with your GPU and view the results.
+- The detail of experiments is shown in LoRACSE.pdf.
 
 ## Performance
 
