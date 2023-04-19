@@ -1,7 +1,7 @@
 # 😜LoRACSE: Contrastive Learning of Sentence Embedding using LoRA
 ##  Final project of EECS 487: Introduction to Natural Language Processing (Umich)
 ### Autor: Yilin Jia, Sikai Li, Yuqi Mai
-### Date: 18 April, 2013
+### Date: 18 April, 2023
 
 ## Instructions
 
