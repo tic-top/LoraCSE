@@ -34,8 +34,8 @@ We would like to acknowledge the following projects for their contributions to o
 
 We are grateful to the contributors of these projects for sharing their knowledge and expertise with the community.
 
-## Todo
-- Try to use adalora to tune.
+## Future work
+- Learn and use adalora to tune.
 - Try to tune roberta-large with batch size 512 on multigpu.
-- Try to fine-tune debertv3.
+- Try to tune debertv3.
 - Upload the model to Huggingface.
