@@ -15,7 +15,7 @@
 | sup-loracse-roberta-base (batch size 512) |   82.49  |
 | sup-loracse-roberta-large (batch size 375) |   84.69  |
 
-## System Requirements
+## Requirements
 
 To run the experiment, which involves processing large amounts of data with a batch size of 512, your GPU must have at least 40GB of RAM. Here are the compatible GPUs:
 
