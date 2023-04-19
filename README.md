@@ -2,13 +2,10 @@
 
 ### date: 18/4/2013
 
-## Instruction
+## Instructions
 
-Everything is done in LoraCSE.ipynb
-
-The LoraCSE.ipynb contains all the experiments.(optimizer with Lion)
-
-The LoraCSE_recorded.ipynb records part of previous experiments.(optimizer with AdamW)
+- Open the LoraCSE.ipynb notebook to access all the experiments that use the Lion optimizer.
+- Follow the instructions provided in each notebook to run the experiments and view the results.
 
 ## Performance
 
@@ -18,8 +15,23 @@ The LoraCSE_recorded.ipynb records part of previous experiments.(optimizer with 
 | sup-loracse-roberta-base (batch size 512) |   82.49  |
 | sup-loracse-roberta-large (batch size 375) |   84.69  |
 
-## Requirement
+## System Requirements
 
-To run the experiment with batch size 512 , the GPU RAM should be at least 40G.
+To run the experiment, which involves processing large amounts of data with a batch size of 512, your GPU must have at least 40GB of RAM. Here are the compatible GPUs:
 
-So, you can run on one V100, V6000, V40 or four RTX4090.
+- V100
+- V6000
+- V40
+- RTX4090 (four required)
+
+
+## Acknowledgements
+
+We would like to acknowledge the following projects for their contributions to our work:
+
+- [SimCSE](https://github.com/princeton-nlp/SimCSE): Our code has learned a lot from the implementation and ideas presented in this repository.
+- [PEFT](https://github.com/huggingface/peft): We have used some of the functionality provided by this library to improve the performance of our code.
+
+We are grateful to the contributors of these projects for sharing their knowledge and expertise with the community.
+
+
