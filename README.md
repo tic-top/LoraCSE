@@ -5,7 +5,7 @@
 ## Instructions
 
 - Open the LoraCSE.ipynb notebook to access all the experiments.
-- Follow the instructions provided in each notebook to run the experiments and view the results.
+- Follow the instructions provided in the notebook to run the experiments and view the results.
 
 ## Performance
 
