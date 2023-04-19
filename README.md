@@ -39,6 +39,6 @@ We are grateful to the contributors of these projects for sharing their knowledg
 
 ## Future work
 - Learn and use adalora to tune.
-- Try to tune roberta-large with batch size 512 on multigpu.
+- Accelerate the training and evaluation.
 - Try to tune debertv3.
 - Upload the model to Huggingface.
